@@ -32,7 +32,7 @@ def get_job_details(website, job_name):
     form_job_data = browser.find_element_by_id("KeywordSearch")
     form_job_data.send_keys(job_name)
     form_job_location = browser.find_element_by_id("LocationSearch")
-    form_job_location.send_keys()
+    form_job_location.clear()
     form_submit = browser.find_element_by_id("HeroSearchButton")
     form_submit.click()
     sleep(30)
