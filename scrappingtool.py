@@ -1,12 +1,18 @@
 from selenium import webdriver
 from time import sleep
-from selenium.webdriver.common import keys,action_chains
-from selenium.webdriver.chrome.webdriver import Options
+# from selenium.webdriver.common import keys,action_chains
+# from selenium.webdriver.chrome.webdriver import Options
 import sys
-import selenium.common.exceptions
-import pprint
+from selenium.common.exceptions import *
+# import pprint
 url = "https://www.glassdoor.com/index.htm"
 
+
+# This Method is used to find the number of pages of results available
+def get_total_pages(browser):
+    total = browser.find_element_by_id("TotalPages").get_attribute("value")
+    print("Search Results span across {} pages ".format(total))
+    return total
 
 def web_browser():
     chrome_options = webdriver.ChromeOptions()
@@ -27,31 +33,49 @@ def web_browser():
 
 
 def get_job_details(website, job_name):
+    print("Initialize Browser")
     browser = web_browser()
+    print("Logging into the Web browser")
     browser.get(website)
     sleep(2)
     form_job_data = browser.find_element_by_id("KeywordSearch")
-    form_job_data.send_keys(job_name)
-    form_job_location = browser.find_element_by_id("LocationSearch")
-    form_job_location.clear()
-    form_submit = browser.find_element_by_id("HeroSearchButton")
-    form_submit.click()
+    print("Start searching for Job title {}".format(job_name))
+    try:
+        form_job_data.send_keys(job_name)
+        form_job_location = browser.find_element_by_id("LocationSearch")
+        form_job_location.clear()
+        form_submit = browser.find_element_by_id("HeroSearchButton")
+        form_submit.click()
+        print("Job Search Initialized Successfully")
+
+    except NoSuchElementException:
+
+        print("Failed to Click Search button")
+        sys.exit("Error Message")
+
     sleep(2)
-    save_url = browser.current_url
-    print("Save url contains :{}".format(save_url))
-    sleep(2)
-    #job_list = browser.find_element_by_class_name("jl")
-    #job_link_list = browser.find_elements_by_partial_link_text("/partner/jobListing.htm?")
+    iter = get_total_pages(browser)
+
+#   save_url = browser.current_url
+#   print("Save url contains :{}".format(save_url))
+#   sleep(2)
+#   job_list = browser.find_element_by_class_name("jl")
+#   job_link_list = browser.find_elements_by_partial_link_text("/partner/jobListing.htm?")
+    print("Started collecting Job listings")
+
     job_link_list = browser.find_elements_by_class_name("jobLink")
     sleep(2)
-    j={}
+    j = {}
     for i in job_link_list:
         hyper_link = i.get_attribute('href')
         job_list_id = hyper_link[len(hyper_link)-10:]
         j.setdefault(job_list_id, hyper_link)
-        print("Job Listing : {} URL : {}".format(job_list_id, hyper_link))
-
-    pprint.pprint(j)
+#       print("Job Listing : {} URL : {}".format(job_list_id, hyper_link))
+    if len(j) > 0:
+        print("Job list preparation successful")
+    else:
+        print("No Jobs found, please verify the search criteria")
+#   pprint.pprint(j)
 
 
 get_job_details(url, "Cloud Developer")
