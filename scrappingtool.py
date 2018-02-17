@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.webdriver import Options
 import sys
 import selenium.common.exceptions
 
+url = "https://www.glassdoor.com/index.htm"
 
 def web_browser():
     chrome_options = webdriver.ChromeOptions()
@@ -24,7 +25,16 @@ def web_browser():
     return browser1
 
 
-website = "https://www.glassdoor.com/index.htm"
-browser = web_browser()
-browser.get(website)
+def get_job_details(website, job_name):
+    browser = web_browser()
+    browser.get(website)
+    sleep(2)
+    form_job_data = browser.find_element_by_id("KeywordSearch")
+    form_job_data.send_keys(job_name)
+    form_job_location = browser.find_element_by_id("LocationSearch")
+    form_job_location.send_keys()
+    form_submit = browser.find_element_by_id("HeroSearchButton")
+    form_submit.click()
+    sleep(30)
 
+get_job_details(url, "Cloud Developer")
