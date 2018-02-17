@@ -4,8 +4,9 @@ from selenium.webdriver.common import keys,action_chains
 from selenium.webdriver.chrome.webdriver import Options
 import sys
 import selenium.common.exceptions
-
+import pprint
 url = "https://www.glassdoor.com/index.htm"
+
 
 def web_browser():
     chrome_options = webdriver.ChromeOptions()
@@ -35,6 +36,22 @@ def get_job_details(website, job_name):
     form_job_location.clear()
     form_submit = browser.find_element_by_id("HeroSearchButton")
     form_submit.click()
-    sleep(30)
+    sleep(2)
+    save_url = browser.current_url
+    print("Save url contains :{}".format(save_url))
+    sleep(2)
+    #job_list = browser.find_element_by_class_name("jl")
+    #job_link_list = browser.find_elements_by_partial_link_text("/partner/jobListing.htm?")
+    job_link_list = browser.find_elements_by_class_name("jobLink")
+    sleep(2)
+    j={}
+    for i in job_link_list:
+        hyper_link = i.get_attribute('href')
+        job_list_id = hyper_link[len(hyper_link)-10:]
+        j.setdefault(job_list_id, hyper_link)
+        print("Job Listing : {} URL : {}".format(job_list_id, hyper_link))
+
+    pprint.pprint(j)
+
 
 get_job_details(url, "Cloud Developer")
